@@ -6,6 +6,9 @@ The system should provide two services:
 1. Store messages coming from the stream and gRPC service.
 2. Get messages.
 
+BadgerDB is used as the database. 
+I choose BadgerDB, because it's a simple embedded key-value database.
+
 ### Improvements 
 There are some improvements that can be made.
 
