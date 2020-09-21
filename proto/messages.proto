@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package proto;
+
+message MessageData {
+    string id = 1;
+    string msg = 2;
+    string username = 3;
+}
+
+message SendMessageResponse {
+    string err = 1;
+}
+
+message GetMessageRequest {
+    int64 limit = 1;
+}
+
+message GetMessageResponse {
+    string err = 1;
+    repeated MessageData messages = 2;
+}
+
+service Message {
+    rpc Send(MessageData) returns (SendMessageResponse) {}
+    rpc Get(GetMessageRequest) returns (GetMessageResponse) {}
+}
