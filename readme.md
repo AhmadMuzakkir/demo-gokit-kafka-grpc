@@ -24,15 +24,17 @@ Prerequisites:
 
 You can use docker compose to run the server and all the required services.
 
-The server Dockerfile runs `go build` with `-mod vendor`. 
-So, please make sure your run `go mod vendor` first, before building the container.
+Note on the Dockerfile: <br />
+The Dockerfile will run `go build` with `-mod vendor`. 
+<br /> So, please make sure your run `go mod vendor` first, before building the image.
 
-To simplify things, you can use the makefile.
+To simply things, you can use provided commands in the Makefile, as explained below. 
 
+To run the docker-compose.
 ```bash
 $ make run-docker
 ```
-Assuming default configurations, the addresses are as below:
+Assuming default configurations, these addresses will be available in the host:
 - GRPC: localhost:8001
 - Kafka: localhost:9092
 - Zookeper: localhost:2181
