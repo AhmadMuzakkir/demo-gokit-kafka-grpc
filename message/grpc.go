@@ -18,11 +18,11 @@ type grpcServer struct {
 func NewGRPCServer(messageService demo.MessageService) proto.MessageServer {
 	return &grpcServer{
 		send: grpctransport.NewServer(
-			makeSendEndpoint(messageService),
+			MakeSendEndpoint(messageService),
 			decodeGRPCSendMessageRequest,
 			encodeGRPCSendMessageResponse),
 		get: grpctransport.NewServer(
-			makeGetEndpoint(messageService),
+			MakeGetEndpoint(messageService),
 			decodeGRPCGetMessageRequest,
 			encodeGRPCGetMessageResponse),
 	}

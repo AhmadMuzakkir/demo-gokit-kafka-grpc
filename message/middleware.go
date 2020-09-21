@@ -7,12 +7,19 @@ import (
 	"github.com/go-kit/kit/log"
 )
 
-type loggingMiddleware struct {
+type LoggingMiddleware struct {
 	logger log.Logger
-	next demo.MessageService
+	svc    demo.MessageService
 }
 
-func (l loggingMiddleware) Send(msg demo.Message) error {
+func NewLoggingMiddleware(svc demo.MessageService, logger log.Logger) *LoggingMiddleware {
+	return &LoggingMiddleware{
+		logger: logger,
+		svc:    svc,
+	}
+}
+
+func (l *LoggingMiddleware) Send(msg demo.Message) error {
 	var err error
 
 	defer func(begin time.Time) {
@@ -26,12 +33,12 @@ func (l loggingMiddleware) Send(msg demo.Message) error {
 		)
 	}(time.Now())
 
-	err = l.next.Send(msg)
+	err = l.svc.Send(msg)
 
 	return err
 }
 
-func (l loggingMiddleware) Get(limit int) ([]demo.Message, error) {
+func (l *LoggingMiddleware) Get(limit int) ([]demo.Message, error) {
 	var err error
 	var messages []demo.Message
 
@@ -45,9 +52,7 @@ func (l loggingMiddleware) Get(limit int) ([]demo.Message, error) {
 		)
 	}(time.Now())
 
-	messages, err = l.next.Get(limit)
+	messages, err = l.svc.Get(limit)
 
 	return messages, err
 }
-
-

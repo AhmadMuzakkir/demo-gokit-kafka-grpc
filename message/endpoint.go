@@ -9,6 +9,40 @@ import (
 
 // message service endpoints.
 
+type Endpoints struct {
+	sendEndpoint endpoint.Endpoint
+	getEndpoint  endpoint.Endpoint
+}
+
+func NewEndpoints(svc demo.MessageService) *Endpoints {
+	return &Endpoints{
+		sendEndpoint: MakeSendEndpoint(svc),
+		getEndpoint:  MakeGetEndpoint(svc),
+	}
+}
+
+func (e *Endpoints) Send(msg demo.Message) error {
+	_, err := e.sendEndpoint(context.Background(), sendMessageRequest{
+		id:       msg.ID,
+		msg:      msg.Msg,
+		username: msg.Username,
+	})
+
+	return err
+}
+
+func (e *Endpoints) Get(limit int) ([]demo.Message, error) {
+	resp, err := e.getEndpoint(context.Background(), getMessageRequest{
+		limit: limit,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	res := resp.(getMessageResponse)
+	return res.messages, res.err
+}
+
 type sendMessageRequest struct {
 	id       string
 	msg      string
@@ -19,7 +53,7 @@ type sendMessageResponse struct {
 	Err string
 }
 
-func makeSendEndpoint(svc demo.MessageService) endpoint.Endpoint {
+func MakeSendEndpoint(svc demo.MessageService) endpoint.Endpoint {
 	return func(_ context.Context, request interface{}) (interface{}, error) {
 		req := request.(sendMessageRequest)
 		err := svc.Send(demo.Message{
@@ -43,7 +77,7 @@ type getMessageResponse struct {
 	messages []demo.Message
 }
 
-func makeGetEndpoint(svc demo.MessageService) endpoint.Endpoint {
+func MakeGetEndpoint(svc demo.MessageService) endpoint.Endpoint {
 	return func(_ context.Context, request interface{}) (interface{}, error) {
 		req := request.(getMessageRequest)
 		messages, err := svc.Get(req.limit)

@@ -74,7 +74,10 @@ func main() {
 		kafkaRepo = badgerRepo.KafkaRepository()
 	}
 
-	messageService := message.NewService(messageRepo, logger)
+	messageService := message.NewService(messageRepo)
+	messageService = message.NewLoggingMiddleware(messageService, logger)
+	messageEndpoints := message.NewEndpoints(messageService)
+	grpcServer := message.NewGRPCServer(messageEndpoints)
 
 	// Starts kafka consumer
 
@@ -94,7 +97,6 @@ func main() {
 
 	// Starts gRPC server
 
-	grpcServer := message.NewGRPCServer(messageService)
 	grpcListener, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		fmt.Printf("failed to listen to grpc port %d: %v", port, err)
